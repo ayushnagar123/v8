@@ -31,27 +31,27 @@
 
 
 # for py2/py3 compatibility
-from __future__ import print_function
 
-import BaseHTTPServer
+
+import http.server
 import bisect
 import cgi
 import cmd
 import codecs
 import ctypes
 import datetime
-import disasm
+from . import disasm
 import inspect
 import mmap
 import optparse
 import os
 import re
-import StringIO
+import io
 import sys
 import types
-import urllib
-import urlparse
-import v8heapconst
+import urllib.request, urllib.parse, urllib.error
+import urllib.parse
+from . import v8heapconst
 import webbrowser
 
 PORT_NUMBER = 8081
@@ -735,7 +735,7 @@ class MinidumpReader(object):
         return None
       print(("# Looking for platform specific (%s) objdump in "
              "third_party directory.") % platform_filter)
-      objdumps = filter(lambda file: platform_filter in file >= 0, objdumps)
+      objdumps = [file for file in objdumps if platform_filter in file >= 0]
       if len(objdumps) == 0:
         print("# Could not find platform specific objdump in third_party.")
         print("# Make sure you installed the correct SDK.")
@@ -2267,7 +2267,7 @@ class InspectionPadawan(object):
       count += 1
     if count <= 5 or len(possible_context) == 0: return
     # Find entry with highest count
-    possible_context = possible_context.items()
+    possible_context = list(possible_context.items())
     possible_context.sort(key=lambda pair: pair[1])
     address,count = possible_context[-1]
     if count <= 4: return
@@ -2580,7 +2580,7 @@ class WebParameterError(Exception):
     Exception.__init__(self, message)
 
 
-class InspectionWebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class InspectionWebHandler(http.server.BaseHTTPRequestHandler):
   def formatter(self, query_components):
     name = query_components.get("dump", [None])[0]
     return self.server.get_dump_formatter(name)
@@ -2596,26 +2596,26 @@ class InspectionWebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 
   def do_GET(self):
     try:
-      parsedurl = urlparse.urlparse(self.path)
-      query_components = urlparse.parse_qs(parsedurl.query)
+      parsedurl = urllib.parse.urlparse(self.path)
+      query_components = urllib.parse.parse_qs(parsedurl.query)
       if parsedurl.path == "/dumps.html":
         self.send_success_html_headers()
-        out_buffer = StringIO.StringIO()
+        out_buffer = io.StringIO()
         self.server.output_dumps(out_buffer)
         self.wfile.write(out_buffer.getvalue())
       elif parsedurl.path == "/summary.html":
         self.send_success_html_headers()
-        out_buffer = StringIO.StringIO()
+        out_buffer = io.StringIO()
         self.formatter(query_components).output_summary(out_buffer)
         self.wfile.write(out_buffer.getvalue())
       elif parsedurl.path == "/info.html":
         self.send_success_html_headers()
-        out_buffer = StringIO.StringIO()
+        out_buffer = io.StringIO()
         self.formatter(query_components).output_info(out_buffer)
         self.wfile.write(out_buffer.getvalue())
       elif parsedurl.path == "/modules.html":
         self.send_success_html_headers()
-        out_buffer = StringIO.StringIO()
+        out_buffer = io.StringIO()
         self.formatter(query_components).output_modules(out_buffer)
         self.wfile.write(out_buffer.getvalue())
       elif parsedurl.path == "/search.html" or parsedurl.path == "/s":
@@ -2624,7 +2624,7 @@ class InspectionWebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
           self.send_error(404, "Invalid params")
           return
         self.send_success_html_headers()
-        out_buffer = StringIO.StringIO()
+        out_buffer = io.StringIO()
         self.formatter(query_components).output_search_res(
             out_buffer, address[0])
         self.wfile.write(out_buffer.getvalue())
@@ -2635,7 +2635,7 @@ class InspectionWebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
           self.send_error(404, "Invalid params")
           return
         self.send_success_html_headers()
-        out_buffer = StringIO.StringIO()
+        out_buffer = io.StringIO()
         self.formatter(query_components).output_disasm(
             out_buffer, address[0], exact[0])
         self.wfile.write(out_buffer.getvalue())
@@ -2644,7 +2644,7 @@ class InspectionWebHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         datakind = query_components.get("type", ["address"])
         if len(address) == 1 and len(datakind) == 1:
           self.send_success_html_headers()
-          out_buffer = StringIO.StringIO()
+          out_buffer = io.StringIO()
           self.formatter(query_components).output_data(
               out_buffer, address[0], datakind[0])
           self.wfile.write(out_buffer.getvalue())
@@ -2702,7 +2702,7 @@ class InspectionWebFormatter(object):
 
   def __init__(self, switches, minidump_name, http_server):
     self.dumpfilename = os.path.split(minidump_name)[1]
-    self.encfilename = urllib.urlencode({ 'dump' : self.dumpfilename })
+    self.encfilename = urllib.parse.urlencode({ 'dump' : self.dumpfilename })
     self.reader = MinidumpReader(switches, minidump_name)
     self.server = http_server
 
@@ -2950,7 +2950,7 @@ class InspectionWebFormatter(object):
         for i in range(end_region, slot + size):
           straddress += "??"
         for i in reversed(
-            range(max(slot, region[0]), min(slot + size, end_region))):
+            list(range(max(slot, region[0]), min(slot + size, end_region)))):
           straddress += "%02x" % self.reader.ReadU8(i)
         for i in range(slot, region[0]):
           straddress += "??"
@@ -3328,9 +3328,9 @@ WEB_DUMPS_FOOTER = """
 DUMP_FILE_RE = re.compile(r"[-_0-9a-zA-Z][-\._0-9a-zA-Z]*\.dmp$")
 
 
-class InspectionWebServer(BaseHTTPServer.HTTPServer):
+class InspectionWebServer(http.server.HTTPServer):
   def __init__(self, port_number, switches, minidump_name):
-    BaseHTTPServer.HTTPServer.__init__(
+    http.server.HTTPServer.__init__(
         self, ('localhost', port_number), InspectionWebHandler)
     splitpath = os.path.split(minidump_name)
     self.dumppath = splitpath[0]
@@ -3401,7 +3401,7 @@ class InspectionWebServer(BaseHTTPServer.HTTPServer):
       for fname in fnames:
         f.write("<tr>\n")
         f.write("<td><a href=\"summary.html?%s\">%s</a></td>\n" % (
-            (urllib.urlencode({ 'dump' : fname }), fname)))
+            (urllib.parse.urlencode({ 'dump' : fname }), fname)))
         f.write("<td>&nbsp;&nbsp;&nbsp;")
         f.write(datetime.datetime.fromtimestamp(mtime))
         f.write("</td>")
@@ -3853,7 +3853,7 @@ def AnalyzeMinidump(options, minidump_name):
     print("  code:      %08X" % reader.exception.exception.code)
     print("  context:")
     context = CONTEXT_FOR_ARCH[reader.arch]
-    maxWidth = max(map(lambda s: len(s), context))
+    maxWidth = max([len(s) for s in context])
     for r in context:
       register_value = reader.Register(r)
       print("    %s: %s" % (r.rjust(maxWidth),

@@ -16,12 +16,12 @@ compared. Differences are reported as errors.
 
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import sys
 
-from testrunner.local import command
-from testrunner.local import utils
+from .testrunner.local import command
+from .testrunner.local import utils
 
 
 MAX_TRIES = 3
@@ -41,15 +41,15 @@ def main(args):
 
   previous_allocations = None
   for run in range(1, MAX_TRIES + 1):
-    print('### Predictable run #%d' % run)
+    print(('### Predictable run #%d' % run))
     output = cmd.execute()
     if output.stdout:
       print('### Stdout:')
-      print(output.stdout)
+      print((output.stdout))
     if output.stderr:
       print('### Stderr:')
-      print(output.stderr)
-    print('### Return code: %s' % output.exit_code)
+      print((output.stderr))
+    print(('### Return code: %s' % output.exit_code))
     if output.HasTimedOut():
       # If we get a timeout in any run, we are in an unpredictable state. Just
       # report it as a failure and don't rerun.

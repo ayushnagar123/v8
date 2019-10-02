@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import argparse
 import subprocess
@@ -71,10 +71,10 @@ def CountMatchingFiles(commit, files):
 def FindFirstMatchingCommit(start, files, limit, verbose):
   commit = GetGitCommitHash(start)
   num_files = len(files)
-  if verbose: print(">>> Found %d files modified by patch." % num_files)
+  if verbose: print((">>> Found %d files modified by patch." % num_files))
   for _ in range(limit):
     matched_files = CountMatchingFiles(commit, files)
-    if verbose: print("Commit %s matched %d files" % (commit, matched_files))
+    if verbose: print(("Commit %s matched %d files" % (commit, matched_files)))
     if matched_files == num_files:
       return commit
     commit = GetGitCommitHash("%s^" % commit)
@@ -89,8 +89,8 @@ if __name__ == "__main__":
   files = FindFilesInPatch(args.patch_file)
   commit = FindFirstMatchingCommit(args.branch, files, args.limit, args.verbose)
   if args.verbose:
-    print(">>> Matching commit: %s" % commit)
-    print(subprocess.check_output(["git", "log", "-1", commit]))
+    print((">>> Matching commit: %s" % commit))
+    print((subprocess.check_output(["git", "log", "-1", commit])))
     print(">>> Kthxbai.")
   else:
     print(commit)

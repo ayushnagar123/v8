@@ -6,7 +6,7 @@
 # command script import <this_dir>/lldb_commands.py
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import lldb
 import re
@@ -26,7 +26,7 @@ def no_arg_cmd(debugger, cmd):
 
 def ptr_arg_cmd(debugger, name, param, cmd):
   if not param:
-    print("'{}' requires an argument".format(name))
+    print(("'{}' requires an argument".format(name)))
     return
   param = '(void*)({})'.format(param)
   no_arg_cmd(debugger, cmd.format(param))
@@ -94,9 +94,9 @@ def bta(debugger, *args):
 
     if sourceFile is None:
       sourceFile = ""
-    print("[%-2s] %-60s %-40s" % (frame.GetFrameID(),
+    print(("[%-2s] %-60s %-40s" % (frame.GetFrameID(),
                                   functionName.group(1),
-                                  sourceFile))
+                                  sourceFile)))
     match = assert_re.match(str(functionSignature))
     if match:
       if match.group(3) == "false":
@@ -105,8 +105,8 @@ def bta(debugger, *args):
       else:
         prefix = "Allow"
         color = "\033[92m"
-      print("%s -> %s %s (%s)\033[0m" % (
-          color, prefix, match.group(2), match.group(1)))
+      print(("%s -> %s %s (%s)\033[0m" % (
+          color, prefix, match.group(2), match.group(1))))
 
 def __lldb_init_module(debugger, dict):
   debugger.HandleCommand('settings set target.x86-disassembly-flavor intel')

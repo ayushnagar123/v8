@@ -5,7 +5,7 @@
 # found in the LICENSE file.
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import json
 import multiprocessing
@@ -160,7 +160,7 @@ def ClangTidyRunAggregate(build_folder, print_files):
           res.group(2),
           ClangTidyWarning(res.group(2))).add_occurrence(res.group(1))
 
-  for warning in sorted(warnings.values(), reverse=True):
+  for warning in sorted(list(warnings.values()), reverse=True):
     sys.stdout.write(warning.to_string(print_files))
 
 
@@ -388,7 +388,7 @@ def main():
     print('Could not find compilation database, ' \
       'please generate it with --gen-compdb')
   else:
-    print('Using build folder:', options.build_folder)
+    print(('Using build folder:', options.build_folder))
     if options.full:
       print('Running clang-tidy - full')
       ClangTidyRunFull(options.build_folder,
@@ -401,7 +401,7 @@ def main():
         print('Auto fix not working in aggregate mode, running without.')
       ClangTidyRunAggregate(options.build_folder, options.show_loc)
     elif options.single:
-      print('Running clang-tidy - single on ' + options.file_name)
+      print(('Running clang-tidy - single on ' + options.file_name))
       if options.file_name is not None:
         line_ranges = []
         for match in re.findall(r'(\[.*?\])', options.line_ranges):

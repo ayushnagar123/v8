@@ -29,7 +29,7 @@
 
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 try:
   import hashlib
@@ -50,9 +50,9 @@ import subprocess
 import multiprocessing
 from subprocess import PIPE
 
-from testrunner.local import statusfile
-from testrunner.local import testsuite
-from testrunner.local import utils
+from .testrunner.local import statusfile
+from .testrunner.local import testsuite
+from .testrunner.local import utils
 
 # Special LINT rules diverging from default and reason.
 # build/header_guard: Our guards have the form "V8_FOO_H_", not "SRC_FOO_H_".
@@ -87,7 +87,7 @@ def CppLintWorker(command):
       out_line = process.stderr.readline()
       if out_line == '' and process.poll() != None:
         if error_count == -1:
-          print("Failed to process %s" % command.pop())
+          print(("Failed to process %s" % command.pop()))
           return 1
         break
       m = LINT_OUTPUT_PATTERN.match(out_line)
@@ -99,8 +99,8 @@ def CppLintWorker(command):
   except KeyboardInterrupt:
     process.kill()
   except:
-    print('Error running cpplint.py. Please make sure you have depot_tools' +
-          ' in your $PATH. Lint check skipped.')
+    print(('Error running cpplint.py. Please make sure you have depot_tools' +
+          ' in your $PATH. Lint check skipped.'))
     process.kill()
 
 def TorqueLintWorker(command):
@@ -256,7 +256,7 @@ class CacheableSourceFileProcessor(SourceFileProcessor):
   def GetProcessorCommand(self):
     format_processor, options = self.GetProcessorScript()
     if not format_processor:
-      print('Could not find the formatter for % files' % self.file_type)
+      print(('Could not find the formatter for % files' % self.file_type))
       sys.exit(1)
 
     command = [sys.executable, format_processor]
@@ -271,13 +271,13 @@ class CacheableSourceFileProcessor(SourceFileProcessor):
       files = cache.FilterUnchangedFiles(files)
 
     if len(files) == 0:
-      print('No changes in %s files detected. Skipping check' % self.file_type)
+      print(('No changes in %s files detected. Skipping check' % self.file_type))
       return True
 
     files_requiring_changes = self.DetectFilesToChange(files)
-    print (
+    print((
       'Total %s files found that require formatting: %d' %
-      (self.file_type, len(files_requiring_changes)))
+      (self.file_type, len(files_requiring_changes))))
     if self.use_cache:
       for file in files_requiring_changes:
         cache.RemoveFile(file)
@@ -493,13 +493,13 @@ class SourceProcessor(SourceFileProcessor):
     base = basename(name)
     if not base in SourceProcessor.IGNORE_TABS:
       if '\t' in contents:
-        print("%s contains tabs" % name)
+        print(("%s contains tabs" % name))
         result = False
     if not base in SourceProcessor.IGNORE_COPYRIGHTS and \
         not any(ignore_dir in name for ignore_dir
                 in SourceProcessor.IGNORE_COPYRIGHTS_DIRECTORIES):
       if not COPYRIGHT_HEADER_PATTERN.search(contents):
-        print("%s is missing a correct copyright header." % name)
+        print(("%s is missing a correct copyright header." % name))
         result = False
     if ' \n' in contents or contents.endswith(' '):
       line = 0
@@ -512,35 +512,35 @@ class SourceProcessor(SourceFileProcessor):
         lines.append(str(line))
       linenumbers = ', '.join(lines)
       if len(lines) > 1:
-        print("%s has trailing whitespaces in lines %s." % (name, linenumbers))
+        print(("%s has trailing whitespaces in lines %s." % (name, linenumbers)))
       else:
-        print("%s has trailing whitespaces in line %s." % (name, linenumbers))
+        print(("%s has trailing whitespaces in line %s." % (name, linenumbers)))
       result = False
     if not contents.endswith('\n') or contents.endswith('\n\n'):
-      print("%s does not end with a single new line." % name)
+      print(("%s does not end with a single new line." % name))
       result = False
     # Sanitize flags for fuzzer.
     if (".js" in name or ".mjs" in name) and ("mjsunit" in name or "debugger" in name):
       match = FLAGS_LINE.search(contents)
       if match:
-        print("%s Flags should use '-' (not '_')" % name)
+        print(("%s Flags should use '-' (not '_')" % name))
         result = False
       if (not "mjsunit/mjsunit.js" in name and
           not "mjsunit/mjsunit_numfuzz.js" in name):
         if ASSERT_OPTIMIZED_PATTERN.search(contents) and \
             not FLAGS_ENABLE_OPT.search(contents):
-          print("%s Flag --opt should be set if " \
-                "assertOptimized() is used" % name)
+          print(("%s Flag --opt should be set if " \
+                "assertOptimized() is used" % name))
           result = False
         if ASSERT_UNOPTIMIZED_PATTERN.search(contents) and \
             not FLAGS_NO_ALWAYS_OPT.search(contents):
-          print("%s Flag --no-always-opt should be set if " \
-                "assertUnoptimized() is used" % name)
+          print(("%s Flag --no-always-opt should be set if " \
+                "assertUnoptimized() is used" % name))
           result = False
 
       match = self.runtime_function_call_pattern.search(contents)
       if match:
-        print("%s has unexpected spaces in a runtime call '%s'" % (name, match.group(1)))
+        print(("%s has unexpected spaces in a runtime call '%s'" % (name, match.group(1))))
         result = False
     return result
 
@@ -556,7 +556,7 @@ class SourceProcessor(SourceFileProcessor):
           violations += 1
       finally:
         handle.close()
-    print("Total violating files: %s" % violations)
+    print(("Total violating files: %s" % violations))
     return success
 
 def _CheckStatusFileForDuplicateKeys(filepath):
@@ -594,7 +594,7 @@ def _CheckStatusFileForDuplicateKeys(filepath):
     keys = {}
     for key, value in pairs:
       if key in keys:
-        print("%s: Error: duplicate key %s" % (filepath, key))
+        print(("%s: Error: duplicate key %s" % (filepath, key)))
         status["success"] = False
       keys[key] = True
 
@@ -665,7 +665,7 @@ def PyTests(workspace):
       join(workspace, 'tools', 'unittests', 'run_perf_test.py'),
       join(workspace, 'tools', 'testrunner', 'testproc', 'variant_unittest.py'),
     ]:
-    print('Running ' + script)
+    print(('Running ' + script))
     result &= subprocess.call(
         [sys.executable, script], stdout=subprocess.PIPE) == 0
 

@@ -24,7 +24,7 @@ will output
 """
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import argparse
 import math
@@ -66,7 +66,7 @@ class FieldWidth:
                        min=min_width, max=max_width)
 
   def max_widths(self, other):
-    self.widths = {k: max(v, other.widths[k]) for k, v in self.widths.items()}
+    self.widths = {k: max(v, other.widths[k]) for k, v in list(self.widths.items())}
 
   def __getattr__(self, key):
     return self.widths[key]
@@ -195,7 +195,7 @@ class Measurements:
 
   def any(self):
     if self.all:
-      return next(iter(self.all.values()))
+      return next(iter(list(self.all.values())))
     return None
 
   def print_results(self):

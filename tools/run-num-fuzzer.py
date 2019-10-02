@@ -7,7 +7,7 @@
 
 import sys
 
-from testrunner import num_fuzzer
+from .testrunner import num_fuzzer
 
 
 if __name__ == "__main__":

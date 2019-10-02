@@ -23,7 +23,7 @@ of "filters" arguments to run only a subset:
  - "hello" etc.: run "hello" example
 """
 
-from __future__ import print_function
+
 
 import os
 import shutil
@@ -69,7 +69,7 @@ MIN_ARGS = 3  # Script, outdir, tempdir
 
 def _Call(cmd_list, silent=False):
   cmd = " ".join(cmd_list)
-  if not silent: print("# %s" % cmd)
+  if not silent: print(("# %s" % cmd))
   return subprocess.call(cmd, shell=True)
 
 class Runner(object):
@@ -89,15 +89,15 @@ class Runner(object):
     shutil.copyfile(src_wasm_file, dst_wasm_file)
 
   def _Error(self, step, lang, compiler, code):
-    print("Error: %s failed. To repro: tools/run-wasm-api-tests.py "
+    print(("Error: %s failed. To repro: tools/run-wasm-api-tests.py "
           "%s %s %s %s %s" %
           (step, self.outdir, self.tempdir, self.name, lang,
-           compiler["name"].lower()))
+           compiler["name"].lower())))
     return code
 
   def CompileAndRun(self, compiler, language):
-    print("==== %s %s/%s ====" %
-          (self.name, language["name"], compiler["name"]))
+    print(("==== %s %s/%s ====" %
+          (self.name, language["name"], compiler["name"])))
     lang = language["suffix"]
     src_file = self.src_file_basename + "." + lang
     exe_file = self.dst_file_basename + "-" + lang
@@ -144,7 +144,7 @@ def Main(args):
       elif arg in EXAMPLES and arg not in custom_examples:
         custom_examples.append(arg)
       else:
-        print("Didn't understand '%s'" % arg)
+        print(("Didn't understand '%s'" % arg))
         return 1
     if custom_compilers:
       compilers = custom_compilers

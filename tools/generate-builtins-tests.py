@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import json
 import optparse
@@ -152,7 +152,7 @@ def Main():
     ClearGeneratedFiles(options)
     return 0
 
-  print("Unknown action: %s" % action)
+  print(("Unknown action: %s" % action))
   parser.print_help()
   return 1
 

@@ -7,7 +7,7 @@
 
 import sys
 
-from testrunner import standard_runner
+from .testrunner import standard_runner
 
 
 if __name__ == "__main__":

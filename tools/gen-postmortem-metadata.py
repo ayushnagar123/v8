@@ -47,7 +47,7 @@
 #
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import re
 import sys
@@ -374,7 +374,7 @@ def load_objects():
 
         if (len(checktypes) > 0):
                 for klass in checktypes:
-                        print('error: expected class \"%s\" not found' % klass);
+                        print(('error: expected class \"%s\" not found' % klass));
 
                 sys.exit(1);
 
@@ -685,7 +685,7 @@ def emit_config():
         out.write(footer);
 
 if (len(sys.argv) < 4):
-        print('usage: %s output.cc objects.h objects-inl.h' % sys.argv[0]);
+        print(('usage: %s output.cc objects.h objects-inl.h' % sys.argv[0]));
         sys.exit(2);
 
 load_objects();

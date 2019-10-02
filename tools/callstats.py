@@ -18,7 +18,7 @@ For each command, you can try ./runtime-call-stats.py help command.
 '''
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import argparse
 import json
@@ -448,7 +448,7 @@ def print_stats(S, args):
   # Sorting order is in the commend-line arguments.
   sort_func = sort_asc_func if args.sort == "asc" else sort_desc_func
   # Possibly limit how many elements to print.
-  L = [item for item in sorted(S.items(), key=sort_func)
+  L = [item for item in sorted(list(S.items()), key=sort_func)
        if item[0] not in ["Total", "Sum"]]
   N = len(L)
   if args.limit == 0:
@@ -531,10 +531,10 @@ def create_total_page_stats(domains, args):
                       'speedometer-jquery', 'speedometer-backbone',
                       'speedometer-ember', 'speedometer-vanilla'];
   # Sum up all the entries/metrics from all non-excluded domains
-  for domain, entries in domains.items():
+  for domain, entries in list(domains.items()):
     if domain in excluded_domains:
       continue;
-    for key, domain_stats in entries.items():
+    for key, domain_stats in list(entries.items()):
       if key not in total:
         total[key] = {}
         total[key]['time_list'] = list(domain_stats['time_list'])
@@ -567,12 +567,12 @@ def _read_logs(args):
 def do_raw_json(args):
   versions = _read_logs(args)
 
-  for version, domains in versions.items():
+  for version, domains in list(versions.items()):
     if args.aggregate:
       create_total_page_stats(domains, args)
-    for domain, entries in domains.items():
+    for domain, entries in list(domains.items()):
       raw_entries = []
-      for name, value in entries.items():
+      for name, value in list(entries.items()):
         # We don't want the calculated sum in the JSON file.
         if name == "Sum": continue
         raw_entries.append({
@@ -591,12 +591,12 @@ def do_raw_json(args):
 def do_json(args):
   versions = _read_logs(args)
 
-  for version, domains in versions.items():
+  for version, domains in list(versions.items()):
     if args.aggregate:
       create_total_page_stats(domains, args)
-    for domain, entries in domains.items():
+    for domain, entries in list(domains.items()):
       stats = []
-      for name, value in entries.items():
+      for name, value in list(entries.items()):
         # We don't want the calculated sum in the JSON file.
         if name == "Sum": continue
         entry = [name]

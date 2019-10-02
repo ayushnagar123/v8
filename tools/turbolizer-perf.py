@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import os
 import sys
@@ -28,7 +28,7 @@ def trace_begin():
           known_addrs.add(result.group(0))
 
 def trace_end():
-  print(json.dumps(json_obj))
+  print((json.dumps(json_obj)))
 
 def process_event(param_dict):
   addr = "0x%x" % int(param_dict['sample']['ip'])

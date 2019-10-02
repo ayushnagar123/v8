@@ -9,7 +9,7 @@
 """
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import argparse
 import json
@@ -233,27 +233,27 @@ def SetupReportGroups():
 
   if ARGS['only']:
     for only_arg in ARGS['only']:
-      if not only_arg in report_groups.keys():
+      if not only_arg in list(report_groups.keys()):
         print("Error: specified report group '{}' is not defined.".format(
             ARGS['only']))
         exit(1)
       else:
         report_groups = {
-            k: v for (k, v) in report_groups.items() if k in ARGS['only']}
+            k: v for (k, v) in list(report_groups.items()) if k in ARGS['only']}
 
   if ARGS['not']:
     report_groups = {
-        k: v for (k, v) in report_groups.items() if k not in ARGS['not']}
+        k: v for (k, v) in list(report_groups.items()) if k not in ARGS['not']}
 
   if ARGS['list_groups']:
     print_cat_max_width = MaxWidth(list(report_groups.keys()) + ["Category"])
     print("  {:<{}}  {}".format("Category",
                                 print_cat_max_width, "Regular expression"))
-    for cat, regexp_string in report_groups.items():
+    for cat, regexp_string in list(report_groups.items()):
       print("  {:<{}}: {}".format(
           cat, print_cat_max_width, regexp_string))
 
-  report_groups = {k: Group(k, v) for (k, v) in report_groups.items()}
+  report_groups = {k: Group(k, v) for (k, v) in list(report_groups.items())}
 
   return report_groups
 
@@ -267,7 +267,7 @@ class Results:
 
   def track(self, filename):
     is_tracked = False
-    for group in self.groups.values():
+    for group in list(self.groups.values()):
       if group.regexp.match(filename):
         is_tracked = True
     return is_tracked
@@ -275,11 +275,11 @@ class Results:
   def recordFile(self, filename, targetname, loc, in_bytes, expanded, expanded_bytes):
     unit = File(filename, targetname, loc, in_bytes, expanded, expanded_bytes)
     self.units[filename] = unit
-    for group in self.groups.values():
+    for group in list(self.groups.values()):
       group.account(unit)
 
   def maxGroupWidth(self):
-    return MaxWidth([v.name for v in self.groups.values()])
+    return MaxWidth([v.name for v in list(self.groups.values())])
 
   def printGroupResults(self, file):
     for key in sorted(self.groups.keys()):

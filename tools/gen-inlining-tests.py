@@ -5,7 +5,7 @@
 # found in the LICENSE file.
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 from collections import namedtuple
 import textwrap
@@ -297,7 +297,7 @@ def printtest(flags):
 
   # Flag check succeeded.
 
-  trueFlagNames = [name for (name, value) in flags._asdict().items() if value]
+  trueFlagNames = [name for (name, value) in list(flags._asdict().items()) if value]
   flagsMsgLine = "  // Variant flags: [{}]".format(', '.join(trueFlagNames))
   write(textwrap.fill(flagsMsgLine, subsequent_indent='  //   '))
   write("")

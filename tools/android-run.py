@@ -36,7 +36,7 @@
 # Then we parse the output of 'adb shell' and look for that error string.
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import os
 from os.path import join, dirname, abspath
@@ -88,7 +88,7 @@ def WriteToTemporaryFile(data):
 
 def Main():
   if (len(sys.argv) == 1):
-    print("Usage: %s <command-to-run-on-device>" % sys.argv[0])
+    print(("Usage: %s <command-to-run-on-device>" % sys.argv[0]))
     return 1
   workspace = abspath(join(dirname(sys.argv[0]), '..'))
   v8_root = "/data/local/tmp/v8"

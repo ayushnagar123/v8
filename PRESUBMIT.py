@@ -506,7 +506,7 @@ def _CheckMacroUndefs(input_api, output_api):
       for line_nr, line in enumerate(fh, start=1):
         CollectUndefsWithNoDef(defined_macros, errors, f, line, line_nr)
 
-    for name, line_nr in sorted(defined_macros.items(), key=lambda e: e[1]):
+    for name, line_nr in sorted(list(defined_macros.items()), key=lambda e: e[1]):
       errors.append('{}:{}: Macro missing #undef: {}'
                     .format(f.LocalPath(), line_nr, name))
 

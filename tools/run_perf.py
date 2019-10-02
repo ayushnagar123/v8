@@ -103,7 +103,7 @@ The test flags are passed to the js test file after '--'.
 """
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 from functools import reduce
 
 from collections import OrderedDict
@@ -121,15 +121,15 @@ import traceback
 
 import numpy
 
-from testrunner.local import android
-from testrunner.local import command
-from testrunner.local import utils
-from testrunner.objects.output import Output, NULL_OUTPUT
+from .testrunner.local import android
+from .testrunner.local import command
+from .testrunner.local import utils
+from .testrunner.objects.output import Output, NULL_OUTPUT
 
 try:
-  basestring       # Python 2
+  str       # Python 2
 except NameError:  # Python 3
-  basestring = str
+  str = str
 
 SUPPORTED_ARCHS = ['arm',
                    'ia32',
@@ -151,7 +151,7 @@ def GeometricMean(values):
 
   The mean is calculated using log to avoid overflow.
   """
-  values = map(float, values)
+  values = list(map(float, values))
   return math.exp(sum(map(math.log, values)) / len(values))
 
 
@@ -223,9 +223,9 @@ class ResultTracker(object):
 
   def ToDict(self):
     return {
-        'traces': self.traces.values(),
+        'traces': list(self.traces.values()),
         'errors': self.errors,
-        'runnables': self.runnables.values(),
+        'runnables': list(self.runnables.values()),
     }
 
   def WriteToFile(self, file_name):
@@ -338,7 +338,7 @@ class GraphConfig(Node):
 
     assert isinstance(suite.get('path', []), list)
     assert isinstance(suite.get('owners', []), list)
-    assert isinstance(suite['name'], basestring)
+    assert isinstance(suite['name'], str)
     assert isinstance(suite.get('flags', []), list)
     assert isinstance(suite.get('test_flags', []), list)
     assert isinstance(suite.get('resources', []), list)
@@ -813,10 +813,10 @@ class CustomMachineConfiguration:
     try:
       with open('/sys/devices/system/cpu/present', 'r') as f:
         indexes = f.readline()
-        r = map(int, indexes.split('-'))
+        r = list(map(int, indexes.split('-')))
         if len(r) == 1:
-          return range(r[0], r[0] + 1)
-        return range(r[0], r[1] + 1)
+          return list(range(r[0], r[0] + 1))
+        return list(range(r[0], r[1] + 1))
     except Exception:
       logging.exception('Failed to retrieve number of CPUs.')
       raise
@@ -1011,7 +1011,7 @@ def Main(argv):
 
   # Ensure all arguments have absolute path before we start changing current
   # directory.
-  args.suite = map(os.path.abspath, args.suite)
+  args.suite = list(map(os.path.abspath, args.suite))
 
   prev_aslr = None
   prev_cpu_gov = None
@@ -1103,13 +1103,13 @@ def Main(argv):
     if args.json_test_results:
       result_tracker.WriteToFile(args.json_test_results)
     else:  # pragma: no cover
-      print('Primary results:', result_tracker)
+      print(('Primary results:', result_tracker))
 
   if args.shell_dir_secondary:
     if args.json_test_results_secondary:
       result_tracker_secondary.WriteToFile(args.json_test_results_secondary)
     else:  # pragma: no cover
-      print('Secondary results:', result_tracker_secondary)
+      print(('Secondary results:', result_tracker_secondary))
 
   if (result_tracker.errors or result_tracker_secondary.errors or
       have_failed_tests):

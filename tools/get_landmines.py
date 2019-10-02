@@ -9,7 +9,7 @@ This file emits the list of reasons why a particular build needs to be clobbered
 """
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import os
 import sys
@@ -17,7 +17,7 @@ import sys
 sys.path.insert(0, os.path.abspath(
   os.path.join(os.path.dirname(__file__), '..', 'build')))
 
-import get_landmines as build_get_landmines
+from . import get_landmines as build_get_landmines
 
 
 def print_landmines():  # pylint: disable=invalid-name

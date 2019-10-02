@@ -38,16 +38,16 @@
 
 
 # for py2/py3 compatibility
-from __future__ import with_statement
-from __future__ import print_function
+
+
 from functools import reduce
 
 import sys, types, subprocess, math
-import gc_nvp_common
+from . import gc_nvp_common
 
 
 try:
-  long        # Python 2
+  int        # Python 2
 except NameError:
   long = int  # Python 3
 
@@ -188,7 +188,7 @@ def plot_all(plots, trace, prefix):
     outfilename = "%s_%d.png" % (prefix, len(charts))
     charts.append(outfilename)
     script = generate_script_and_datafile(plot, trace, '~datafile', outfilename)
-    print('Plotting %s...' % outfilename)
+    print(('Plotting %s...' % outfilename))
     gnuplot(script)
 
   return charts
@@ -275,7 +275,7 @@ def freduce(f, field, trace, init):
   return reduce(lambda t,r: f(t, r[field]), trace, init)
 
 def calc_total(trace, field):
-  return freduce(lambda t,v: t + long(v), field, trace, long(0))
+  return freduce(lambda t,v: t + int(v), field, trace, int(0))
 
 def calc_max(trace, field):
   return freduce(lambda t,r: max(t, r), field, trace, 0)
@@ -287,9 +287,9 @@ def count_nonzero(trace, field):
 def process_trace(filename):
   trace = gc_nvp_common.parse_gc_trace(filename)
 
-  marksweeps = filter(lambda r: r['gc'] == 'ms', trace)
-  scavenges = filter(lambda r: r['gc'] == 's', trace)
-  globalgcs = filter(lambda r: r['gc'] != 's', trace)
+  marksweeps = [r for r in trace if r['gc'] == 'ms']
+  scavenges = [r for r in trace if r['gc'] == 's']
+  globalgcs = [r for r in trace if r['gc'] != 's']
 
 
   charts = plot_all(plots, trace, filename)
@@ -346,11 +346,11 @@ def process_trace(filename):
     stats(out, 'Total in GC', trace, 'pause')
     stats(out, 'Scavenge', scavenges, 'pause')
     stats(out, 'MarkSweep', marksweeps, 'pause')
-    stats(out, 'Mark', filter(lambda r: r['mark'] != 0, trace), 'mark')
-    stats(out, 'Sweep', filter(lambda r: r['sweep'] != 0, trace), 'sweep')
+    stats(out, 'Mark', [r for r in trace if r['mark'] != 0], 'mark')
+    stats(out, 'Sweep', [r for r in trace if r['sweep'] != 0], 'sweep')
     stats(out,
           'External',
-          filter(lambda r: r['external'] != 0, trace),
+          [r for r in trace if r['external'] != 0],
           'external')
     out.write('</table>')
     throughput('TOTAL', trace)
@@ -361,10 +361,10 @@ def process_trace(filename):
       out.write('<img src="%s">' % chart)
       out.write('</body></html>')
 
-  print("%s generated." % (filename + '.html'))
+  print(("%s generated." % (filename + '.html')))
 
 if len(sys.argv) != 2:
-  print("Usage: %s <GC-trace-filename>" % sys.argv[0])
+  print(("Usage: %s <GC-trace-filename>" % sys.argv[0]))
   sys.exit(1)
 
 process_trace(sys.argv[1])

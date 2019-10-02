@@ -8,12 +8,12 @@
 
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 
 from argparse import ArgumentParser
 from copy import deepcopy
-from gc_nvp_common import split_nvp
+from .gc_nvp_common import split_nvp
 from math import ceil, log
 from sys import stdin
 
@@ -61,7 +61,7 @@ class Histogram:
 
   def __str__(self):
     ret = []
-    keys = self.histogram.keys()
+    keys = list(self.histogram.keys())
     keys.sort()
     last = keys[len(keys) - 1]
     for i in range(0, last + 1):

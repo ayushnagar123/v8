@@ -7,7 +7,7 @@
 # and merges them back into v8 log.
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import os
 import platform
@@ -47,10 +47,10 @@ if __name__ == '__main__':
   if d8_line:
     d8_exec = d8_line.group(1)
     if not is_file_executable(d8_exec):
-      print('d8 binary path found in {} is not executable.'.format(log_file))
+      print(('d8 binary path found in {} is not executable.'.format(log_file)))
       sys.exit(-1)
   else:
-    print('No d8 binary path found in {}.'.format(log_file))
+    print(('No d8 binary path found in {}.'.format(log_file)))
     sys.exit(-1)
 
   args = [d8_exec] + JS_FILES + ['--'] + args

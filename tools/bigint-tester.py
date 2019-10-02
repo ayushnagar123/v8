@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import argparse
 import math
@@ -100,9 +100,9 @@ class TestGenerator(object):
     return TEST_BODY % self.EmitTestCore()
 
   def PrintTest(self, count):
-    print(self.EmitHeader())
-    print(self.EmitData(count))
-    print(self.EmitTestBody())
+    print((self.EmitHeader()))
+    print((self.EmitData(count)))
+    print((self.EmitTestBody()))
 
   def RunTest(self, count, binary):
     try:
@@ -326,12 +326,12 @@ def Main():
   args = parser.parse_args()
 
   for op in args.op:
-    if op not in OPS.keys() and op != "all":
-      print("Invalid op '%s'. See --help." % op)
+    if op not in list(OPS.keys()) and op != "all":
+      print(("Invalid op '%s'. See --help." % op))
       return 1
 
   if len(args.op) == 1 and args.op[0] == "all":
-    args.op = OPS.keys()
+    args.op = list(OPS.keys())
 
   if args.action == "generate":
     if args.num_inputs < 0: args.num_inputs = kNumInputsGenerate
@@ -345,7 +345,7 @@ def Main():
       result = result or r
     return result
   else:
-    print("Invalid action '%s'. See --help." % args.action)
+    print(("Invalid action '%s'. See --help." % args.action))
     return 1
 
 if __name__ == "__main__":

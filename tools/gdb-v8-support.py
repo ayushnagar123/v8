@@ -26,7 +26,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import re
 import tempfile
@@ -225,10 +225,10 @@ GDB_EXTERNAL_EDITOR environment variable.
         # Open generated result.
         if 'GDB_EXTERNAL_EDITOR' in os.environ:
           open_cmd = os.environ['GDB_EXTERNAL_EDITOR']
-          print("Opening '%s' with %s" % (file, open_cmd))
+          print(("Opening '%s' with %s" % (file, open_cmd)))
           subprocess.call([open_cmd, file])
         else:
-          print("Open output:\n  %s '%s'" % (os.environ['EDITOR'], file))
+          print(("Open output:\n  %s '%s'" % (os.environ['EDITOR'], file)))
       finally:
         # Restore original stdout.
         gdb.execute("p dup2(%s, 1)" % old_stdout, to_string=True)

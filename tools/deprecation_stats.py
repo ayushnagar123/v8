@@ -4,7 +4,7 @@
 # found in the LICENSE file.
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import argparse
 from datetime import datetime
@@ -82,9 +82,9 @@ def FilterAndPrint(blame_list, macro, before):
         pos = pos + 1
       deprecated.append([index + 1, time, line[start:pos].strip()])
     index = index + 1
-  print("Marked as " + macro + ": " + str(len(deprecated)))
+  print(("Marked as " + macro + ": " + str(len(deprecated))))
   for linenumber, time, content in deprecated:
-    print(str(linenumber).rjust(8) + " : " + str(time) + " : " + content)
+    print((str(linenumber).rjust(8) + " : " + str(time) + " : " + content))
   return len(deprecated)
 
 def ParseOptions(args):

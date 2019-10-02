@@ -29,12 +29,12 @@
 
 
 # for py2/py3 compatibility
-from __future__ import print_function
+
 
 import bisect
 import collections
 import ctypes
-import disasm
+from . import disasm
 import mmap
 import optparse
 import os
@@ -148,7 +148,7 @@ class Code(object):
     if self.self_ticks_map is None:
       ticks_map = []
     else:
-      ticks_map = self.self_ticks_map.items()
+      ticks_map = list(self.self_ticks_map.items())
     # Convert the ticks map to offsets and counts arrays so that later
     # we can do binary search in the offsets array.
     ticks_map.sort(key=lambda t: t[0])
@@ -172,7 +172,7 @@ class Code(object):
       # for ticks that touch the current instruction line.
       j = bisect.bisect_left(ticks_offsets, end_offset)
       count = 0
-      for offset, cnt in reversed(zip(ticks_offsets[:j], ticks_counts[:j])):
+      for offset, cnt in reversed(list(zip(ticks_offsets[:j], ticks_counts[:j]))):
         if offset < start_offset:
           break
         count += cnt
@@ -300,7 +300,7 @@ class CodeMap(object):
     return removed
 
   def AllCode(self):
-    for page in self.pages.itervalues():
+    for page in self.pages.values():
       for code in page:
         if CodePage.PageAddress(code.start_address) == page.address:
           yield code
@@ -833,7 +833,7 @@ def PrintDot(code_map, options):
       continue
     print("n%d [shape=box,label=\"%s\"];" % (code.id, code.name))
     if code.callee_ticks:
-      for callee, ticks in code.callee_ticks.iteritems():
+      for callee, ticks in code.callee_ticks.items():
         print("n%d -> n%d [label=\"%d\"];" % (code.id, callee.id, ticks))
   print("}")
 
